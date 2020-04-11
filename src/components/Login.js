@@ -1,12 +1,26 @@
-import React, { useState } from 'react'
-
+import React, { useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
 
-import { ALL_BOOKS, CREATE_BOOK } from '../queries'
+import { LOGIN } from '../queries'
 
 const Login = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  const [login, result] = useMutation(LOGIN, {
+    onError: (error) => {
+      console.log(error.graphQLErrors[0].message)
+    },
+  })
+
+  useEffect(() => {
+    if (result.data) {
+      console.log('-->', result.data)
+      const token = result.data.login.value
+      props.setToken(token)
+      localStorage.setItem('user-token', token)
+    }
+  }, [result.data]) // eslint-disable-line
 
   if (!props.show) {
     return null
@@ -14,6 +28,10 @@ const Login = (props) => {
 
   const submit = async (event) => {
     event.preventDefault()
+
+    login({
+      variables: { username, password },
+    })
   }
 
   return (

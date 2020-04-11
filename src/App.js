@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useQuery } from '@apollo/client'
+import React, { useState, useEffect } from 'react'
+import { useQuery, useApolloClient } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
@@ -14,9 +14,26 @@ const App = () => {
 
   const result = useQuery(ALL_AUTHORS)
   const book = useQuery(ALL_BOOKS)
+
+  const client = useApolloClient()
+
   console.log(book)
+
+  useEffect(() => {
+    const token = localStorage.getItem('user-token')
+    if (token) {
+      setToken(token)
+    }
+  }, [])
+
   if (result.loading || book.loading) {
     return <div>loading...</div>
+  }
+
+  const logout = () => {
+    setToken(null)
+    localStorage.clear()
+    client.resetStore()
   }
 
   return (
@@ -26,7 +43,7 @@ const App = () => {
         <button onClick={() => setPage('books')}>books</button>
         {token && <button onClick={() => setPage('add')}>add book</button>}
         {token ? (
-          <button>logout</button>
+          <button onClick={logout}>logout</button>
         ) : (
           <button onClick={() => setPage('login')}>login</button>
         )}
@@ -38,7 +55,7 @@ const App = () => {
 
       <NewBook show={page === 'add'} />
 
-      <Login show={page === 'login'} />
+      <Login show={page === 'login'} setToken={setToken} />
     </div>
   )
 }
