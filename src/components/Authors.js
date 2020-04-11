@@ -14,7 +14,7 @@ const Authors = ({ authors, show }) => {
     }
   }, [result.data]) // eslint-disable-line
 
-  const submit = async event => {
+  const submit = async (event) => {
     event.preventDefault()
 
     editAuthor({ variables: { name, born } })
@@ -37,7 +37,7 @@ const Authors = ({ authors, show }) => {
             <th>born</th>
             <th>books</th>
           </tr>
-          {authors.map(a => (
+          {authors.map((a) => (
             <tr key={a.name}>
               <td>{a.name}</td>
               <td>{a.born}</td>
@@ -52,7 +52,7 @@ const Authors = ({ authors, show }) => {
           author
           <select value={name} onChange={({ target }) => setName(target.value)}>
             <option value='slelct one'>select one</option>
-            {authors.map(author => (
+            {authors.map((author) => (
               <option key={author.id} value={author.name}>
                 {author.name}
               </option>
