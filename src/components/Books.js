@@ -1,14 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const Books = ({ books, show }) => {
+  const [genres, setGenres] = useState('')
+
   if (!show) {
     return null
   }
 
+  const filteredBook = books.filter(
+    (book) => genres === '' || book.genres.includes(genres)
+  )
+
+  console.log('filter', filteredBook)
+
   return (
     <div>
       <h2>books</h2>
-
+      <p>
+        in genres <strong>{genres === '' ? 'all' : genres}</strong>
+      </p>
       <table>
         <tbody>
           <tr>
@@ -16,7 +26,7 @@ const Books = ({ books, show }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.map((a) => (
+          {filteredBook.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -25,6 +35,14 @@ const Books = ({ books, show }) => {
           ))}
         </tbody>
       </table>
+      <div>
+        <button onClick={() => setGenres('refactoring')}>refactoring</button>
+        <button onClick={() => setGenres('database')}>database</button>
+        <button onClick={() => setGenres('nosql')}>nosql</button>
+        <button onClick={() => setGenres('fullstack')}>fullstack</button>
+        <button onClick={() => setGenres('crime')}>crime</button>
+        <button onClick={() => setGenres('type')}>type</button>
+      </div>
     </div>
   )
 }
