@@ -1,16 +1,6 @@
 import React, { useState } from 'react'
-import { GENRES_BOOKS } from '../queries'
-import { useQuery } from '@apollo/client'
 
-const Books = ({ books, show }) => {
-  const [genres, setGenres] = useState(null)
-
-  const result = useQuery(GENRES_BOOKS, {
-    variables: { genre: genres },
-  })
-
-  console.log(result)
-
+const Books = ({ books, show, genre, genreHandle }) => {
   if (!show) {
     return null
   }
@@ -25,7 +15,7 @@ const Books = ({ books, show }) => {
     <div>
       <h2>books</h2>
       <p>
-        in genres <strong>{genres === '' ? 'all' : genres}</strong>
+        in genres <strong>{!genre ? 'all' : genre}</strong>
       </p>
       <table>
         <tbody>
@@ -34,7 +24,7 @@ const Books = ({ books, show }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {result.data.allBooks.map((a) => (
+          {books.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -44,12 +34,12 @@ const Books = ({ books, show }) => {
         </tbody>
       </table>
       <div>
-        <button onClick={() => setGenres('refactoring')}>refactoring</button>
-        <button onClick={() => setGenres('database')}>database</button>
-        <button onClick={() => setGenres('nosql')}>nosql</button>
-        <button onClick={() => setGenres('fullstack')}>fullstack</button>
-        <button onClick={() => setGenres('crime')}>crime</button>
-        <button onClick={() => setGenres('type')}>type</button>
+        <button onClick={() => genreHandle('refactoring')}>refactoring</button>
+        <button onClick={() => genreHandle('database')}>database</button>
+        <button onClick={() => genreHandle('nosql')}>nosql</button>
+        <button onClick={() => genreHandle('fullstack')}>fullstack</button>
+        <button onClick={() => genreHandle('crime')}>crime</button>
+        <button onClick={() => genreHandle('type')}>type</button>
       </div>
     </div>
   )

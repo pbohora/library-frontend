@@ -30,6 +30,9 @@ export const GENRES_BOOKS = gql`
       author {
         name
       }
+      published
+      id
+      genres
     }
   }
 `
