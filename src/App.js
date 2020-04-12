@@ -5,8 +5,7 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
 
-import { ALL_AUTHORS } from './queries'
-import { ALL_BOOKS } from './queries'
+import { ALL_AUTHORS, ALL_BOOKS, GET_ME } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -14,6 +13,9 @@ const App = () => {
 
   const result = useQuery(ALL_AUTHORS)
   const book = useQuery(ALL_BOOKS)
+  const me = useQuery(GET_ME)
+
+  console.log('me', me)
 
   const client = useApolloClient()
 
@@ -25,6 +27,8 @@ const App = () => {
       setToken(token)
     }
   }, [])
+
+  console.log(token)
 
   if (result.loading || book.loading) {
     return <div>loading...</div>
@@ -43,7 +47,12 @@ const App = () => {
         <button onClick={() => setPage('books')}>books</button>
         {token && <button onClick={() => setPage('add')}>add book</button>}
         {token ? (
-          <button onClick={logout}>logout</button>
+          <>
+            <button onClick={() => setPage('recommendation')}>
+              recommendations
+            </button>
+            <button onClick={logout}>logout</button>
+          </>
         ) : (
           <button onClick={() => setPage('login')}>login</button>
         )}
