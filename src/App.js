@@ -4,6 +4,7 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
+import Recommend from './components/Recommend'
 
 import { ALL_AUTHORS, ALL_BOOKS, GET_ME } from './queries'
 
@@ -65,6 +66,8 @@ const App = () => {
       <NewBook show={page === 'add'} />
 
       <Login show={page === 'login'} setToken={setToken} />
+
+      <Recommend show={page === 'recommendation'} me={me.data.me} />
     </div>
   )
 }

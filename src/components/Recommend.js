@@ -1,23 +1,21 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { GENRES_BOOKS } from '../queries'
+import { useQuery } from '@apollo/client'
 
-const Recommend = ({ books, show }) => {
-  const [genres, setGenres] = useState('')
+const Recommend = ({ me, show }) => {
+  const recommend = useQuery(GENRES_BOOKS, {
+    variables: { genre: me.favoriteGenre },
+  })
 
   if (!show) {
     return null
   }
 
-  const filteredBook = books.filter(
-    (book) => genres === '' || book.genres.includes(genres)
-  )
-
-  console.log('filter', filteredBook)
-
   return (
     <div>
-      <h2>books</h2>
+      <h2>recommendations</h2>
       <p>
-        in genres <strong>{genres === '' ? 'all' : genres}</strong>
+        books in oyur favorite genre <strong>{me.favoriteGenre}</strong>
       </p>
       <table>
         <tbody>
@@ -26,7 +24,7 @@ const Recommend = ({ books, show }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filteredBook.map((a) => (
+          {recommend.data.allBooks.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -35,14 +33,6 @@ const Recommend = ({ books, show }) => {
           ))}
         </tbody>
       </table>
-      <div>
-        <button onClick={() => setGenres('refactoring')}>refactoring</button>
-        <button onClick={() => setGenres('database')}>database</button>
-        <button onClick={() => setGenres('nosql')}>nosql</button>
-        <button onClick={() => setGenres('fullstack')}>fullstack</button>
-        <button onClick={() => setGenres('crime')}>crime</button>
-        <button onClick={() => setGenres('type')}>type</button>
-      </div>
     </div>
   )
 }
