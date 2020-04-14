@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { GENRES_BOOKS, ALL_BOOKS } from '../queries'
-import { useQuery } from '@apollo/client'
+import React from 'react'
 
 const Recommend = ({ books, genre, show }) => {
   if (!show) {
