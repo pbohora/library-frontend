@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { useQuery, useApolloClient } from '@apollo/client'
+import { useQuery, useSubscription, useApolloClient } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
 import Recommend from './components/Recommend'
 
-import { ALL_AUTHORS, ALL_BOOKS, GET_ME, GENRES_BOOKS } from './queries'
+import {
+  ALL_AUTHORS,
+  ALL_BOOKS,
+  GET_ME,
+  GENRES_BOOKS,
+  BOOK_ADDED,
+} from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -17,11 +23,7 @@ const App = () => {
   const book = useQuery(ALL_BOOKS)
   const me = useQuery(GET_ME)
 
-  console.log('me', me)
-
   const client = useApolloClient()
-
-  console.log(book)
 
   useEffect(() => {
     const token = localStorage.getItem('user-token')
@@ -30,17 +32,36 @@ const App = () => {
     }
   }, [])
 
-  console.log(token)
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) => set.map((p) => p.id).includes(object.id)
+
+    const dataInStore = client.readQuery({
+      query: GENRES_BOOKS,
+      variables: { genre: genre },
+    })
+    console.log(dataInStore)
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: GENRES_BOOKS,
+        data: { allBooks: dataInStore.allBooks.concat(addedBook) },
+      })
+    }
+  }
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const addedBook = subscriptionData.data.bookAdded
+      console.log(addedBook)
+      window.alert(`Added book ${addedBook.title}`)
+
+      updateCacheWith(addedBook)
+    },
+  })
 
   const genreBook = useQuery(GENRES_BOOKS, {
     variables: { genre: genre },
     update: (store, response) => {
-      const dataInStore = store.readQuery({ query: GENRES_BOOKS })
-      dataInStore.allBooks.push(response.data.addBook)
-      store.writeQuery({
-        query: GENRES_BOOKS,
-        data: dataInStore,
-      })
+      updateCacheWith(response.data.addBook)
     },
   })
 
@@ -56,8 +77,6 @@ const App = () => {
     setGenre(genre)
     setPage('recommendation')
   }
-
-  console.log('genre', genre)
 
   const logout = () => {
     setToken(null)
